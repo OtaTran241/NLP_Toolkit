@@ -41,7 +41,7 @@
 - **Dictionary-Based Encoding**: 
   - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).
  
-- **Demo of Multi-Process**
+- **Demo of Multi-Process**:
   - In the `main` function, we demonstrate how various functionalities of the toolkit are tested in parallel using multi-threading. The multi-threading is used to run tests on functions like tokenization, bag-of-words, n-grams, normalization, embeddings, and stemming in parallel, without blocking the execution.
 
 Here is an example:

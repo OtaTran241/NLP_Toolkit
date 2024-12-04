@@ -4,7 +4,7 @@
 ---
 
 ## **Project overview**  
-**NLP Toolkit** is a high-performance library written in C++ designed to address the needs of Natural Language Processing (NLP) applications. By leveraging advanced C++ techniques such as multi-threading, batch processing, and GPU acceleration, this toolkit is capable of handling large-scale text data efficiently. The library provides core NLP functionalities such as tokenization, stemming, embeddings(for simulation purposes only), and more, and can be easily extended for real-world applications.
+**NLP Toolkit** is a high-performance library written in C++ designed to address the needs of Natural Language Processing (NLP) applications. By leveraging advanced C++ techniques such as multi-threading, batch processing, this toolkit is capable of handling large-scale text data efficiently. The library provides core NLP functionalities such as tokenization, stemming, embeddings(for simulation purposes only), and more, and can be easily extended for real-world applications.
 
 ---
 
@@ -21,7 +21,6 @@
 ## **Key Features**  
 - **Efficient Tokenization**: 
   - Tokenize text into words or subwords with support for batch processing and multi-threading.
-  - GPU acceleration ensures performance at scale for large datasets.
 
 - **Bag-of-Words Construction**: 
   - Generates frequency counts of words in a given dataset using multi-threading for faster computation.
@@ -96,16 +95,13 @@ int main() {
 2. **Batch Processing for Scalability**  
    - Both `Tokenizer` and `Bag-of-Words` implementations are optimized to process batches of text data in parallel.
 
-3. **GPU Acceleration**  
-   - Integrated with GPU computation for tasks such as tokenization and embedding generation, where supported.
-
-4. **Custom Embeddings**  
+3. **Custom Embeddings**  
    - Generates random embeddings with configurable dimensions to simulate vector space models.  
 
-5. **Modern C++ Design**  
+4. **Modern C++ Design**  
    - Written in C++17, employing modern constructs like `std::async`, `std::unordered_map`, and lambdas for clean, maintainable, and high-performance code.  
 
-6. **Critical Section Synchronization**  
+5. **Critical Section Synchronization**  
    - Uses critical sections for thread-safe logging, ensuring consistent and reliable output even in multi-threaded environments.  
 
 ---

@@ -4,7 +4,7 @@
 ---
 
 ## **Project overview**  
-**NLP Toolkit** is a high-performance library written in C++ designed to address the needs of Natural Language Processing (NLP) applications. By leveraging advanced C++ techniques such as multi-threading, batch processing, and GPU acceleration, this toolkit is capable of handling large-scale text data efficiently. The library provides core NLP functionalities such as tokenization, stemming, embeddings, and more, and can be easily extended for real-world applications.
+**NLP Toolkit** is a high-performance library written in C++ designed to address the needs of Natural Language Processing (NLP) applications. By leveraging advanced C++ techniques such as multi-threading, batch processing, and GPU acceleration, this toolkit is capable of handling large-scale text data efficiently. The library provides core NLP functionalities such as tokenization, stemming, embeddings(for simulation purposes only), and more, and can be easily extended for real-world applications.
 
 ---
 

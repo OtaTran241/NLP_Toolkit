@@ -1,8 +1,0 @@
-﻿  pybind_NLP_Toolkit.cpp
-  main.cpp
-  Tokenizer.cpp
-  Toolkit.cpp
-D:\Desktop\CPP_Project\CPP_test\NLP_Toolkit\Toolkit.cpp(36,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\Desktop\CPP_Project\CPP_test\NLP_Toolkit\Toolkit.cpp(102,22): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  Generating Code...
-  NLP_Toolkit.vcxproj -> D:\Desktop\CPP_Project\CPP_test\NLP_Toolkit\x64\Debug\NLP_Toolkit.exe

@@ -1,10 +1,17 @@
-#include "Tokenizer.h"
-#include <stdexcept>
+﻿#include "Tokenizer.h"
 #include <thread>
 #include <future>
-#include <algorithm>
 
 Tokenizer::Tokenizer(const std::vector<std::string>& vocabList) : vocab(vocabList), idToToken(vocabList) {
+    /*
+    Input:
+        - vocabList: A list of vocabulary strings.
+    Output:
+        - Constructs the Tokenizer object, mapping tokens to IDs and vice versa.
+    Functionality:
+        - Adds an "<UNK>" token if not present for handling unknown tokens.
+    */
+
     for (size_t i = 0; i < vocab.size(); ++i) {
         tokenToId[vocab[i]] = static_cast<int>(i);
     }
@@ -20,6 +27,15 @@ Tokenizer::Tokenizer(const std::vector<std::string>& vocabList) : vocab(vocabLis
 }
 
 std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens) {
+    /*
+    Input:
+        - tokens: A vector of strings to encode.
+    Output:
+        - A vector of integers representing the IDs of the tokens.
+    Functionality:
+        - Maps each token to its corresponding ID. Unknown tokens are mapped to "<UNK>".
+    */
+
     std::vector<int> encodedTokens;
     for (const auto& token : tokens) {
         if (tokenToId.find(token) != tokenToId.end()) {
@@ -33,6 +49,15 @@ std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens) {
 }
 
 std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids) {
+    /*
+    Input:
+        - ids: A vector of token IDs to decode.
+    Output:
+        - A vector of strings representing the decoded tokens.
+    Functionality:
+        - Maps each ID to its corresponding token. Throws an exception for invalid IDs.
+    */
+
     std::vector<std::string> decodedTokens;
     for (const auto& id : ids) {
         if (id >= 0 && id < static_cast<int>(idToToken.size())) {
@@ -46,8 +71,23 @@ std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids) {
 }
 
 std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads) {
+    /*
+    Input:
+        - sentences: A batch of token sequences.
+        - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
+    Output:
+        - A vector of vectors, where each inner vector contains encoded token IDs for a sentence.
+    Functionality:
+        - Parallelizes the encoding process using multiple threads.
+    */
+
     size_t numSentences = sentences.size();
-    numThreads = (numThreads == -1) ? std::thread::hardware_concurrency() : std::min(numThreads, static_cast<int>(numSentences));
+
+    size_t maxThreads = std::thread::hardware_concurrency();
+
+    if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
+        numThreads = maxThreads;
+    }
 
     std::vector<std::future<std::vector<int>>> futures;
     std::vector<std::vector<int>> results(numSentences);
@@ -61,12 +101,27 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
     for (size_t i = 0; i < numSentences; ++i) {
         results[i] = futures[i].get();
     }
+
     return results;
 }
 
 std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<std::vector<int>>& encodedSentences, int numThreads) {
+    /*
+    Input:
+        - encodedSentences: A batch of token ID sequences.
+        - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
+    Output:
+        - A vector of vectors, where each inner vector contains decoded tokens for a sentence.
+    Functionality:
+        - Parallelizes the decoding process using multiple threads.
+    */
+
     size_t numSentences = encodedSentences.size();
-    numThreads = (numThreads == -1) ? std::thread::hardware_concurrency() : std::min(numThreads, static_cast<int>(numSentences));
+    size_t maxThreads = std::thread::hardware_concurrency();
+
+    if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
+        numThreads = maxThreads;
+    }
 
     std::vector<std::future<std::vector<std::string>>> futures;
     std::vector<std::vector<std::string>> results(numSentences);
@@ -80,5 +135,6 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
     for (size_t i = 0; i < numSentences; ++i) {
         results[i] = futures[i].get();
     }
+
     return results;
 }

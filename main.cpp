@@ -14,6 +14,7 @@ CRITICAL_SECTION coutLock;
 
 std::vector<std::string> tokens = { "hello", "world", "hello", "my", "name", "is", "My", "what", "is", "your", "name" };
 std::vector<std::string> vocab = { "hello", "world", "<UNK>", "my", "name", "is", "<UNK>", "My" };
+Tokenizer tokenizer(vocab);
 std::string text = "Hello, world! This is a test for Tokenizer.";
 
 void synchronizedPrint(const std::string& text) {
@@ -33,7 +34,7 @@ void testTokenize() {
 }
 
 void testBagOfWords() {
-    auto bag = Toolkit::getBagOfWords(tokens);
+    auto bag = Toolkit::getBagOfWords(tokens, 4);
     std::ostringstream oss;
     oss << "Bag of Words: ";
     for (const auto& [word, count] : bag) {
@@ -63,7 +64,7 @@ void testNormalization() {
 }
 
 void testEmbeddings() {
-    auto embeddings = Toolkit::getEmbeddings(tokens);
+    auto embeddings = Toolkit::getEmbeddings(tokens, 3);
     std::ostringstream oss;
     oss << "Embeddings (showing first 5 values):" << std::endl;
     for (const auto& [token, vec] : embeddings) {
@@ -77,14 +78,13 @@ void testEmbeddings() {
 }
 
 void testStemming() {
-    std::string text = "running";
+    std::string text = "swimming";
     std::string stemmed = Toolkit::stem(text);
     synchronizedPrint("Stemmed: " + stemmed + "\n");
 }
 
 // Test Tokenizer
 void testTokenizerEncode() {
-    Tokenizer tokenizer(vocab);
     std::vector<std::string> sentence = { "hello", "unknown", "world", "is", "name" };
 
     auto encoded = tokenizer.encode(sentence);
@@ -98,7 +98,6 @@ void testTokenizerEncode() {
 }
 
 void testTokenizerDecode() {
-    Tokenizer tokenizer(vocab);
     std::vector<int> encoded = { 0, 2, 1, 5, 7, 3, 4 }; 
 
     auto decoded = tokenizer.decode(encoded);
@@ -112,13 +111,12 @@ void testTokenizerDecode() {
 }
 
 void testTokenizerBatchEncode() {
-    Tokenizer tokenizer(vocab);
     std::vector<std::vector<std::string>> sentences = {
         {"hello", "world", "test"},
         {"unknown", "hello", "name", "My"}
     };
 
-    auto batchEncoded = tokenizer.batchEncode(sentences, 4);
+    auto batchEncoded = tokenizer.batchEncode(sentences);
     std::ostringstream oss;
     oss << "Tokenizer Batch Encode:" << std::endl;
     for (const auto& encoded : batchEncoded) {
@@ -131,13 +129,12 @@ void testTokenizerBatchEncode() {
 }
 
 void testTokenizerBatchDecode() {
-    Tokenizer tokenizer(vocab);
     std::vector<std::vector<int>> encodedSentences = {
         {0, 1, 2, 4, 3},
         {2, 0, 6, 5}
     };
 
-    auto batchDecoded = tokenizer.batchDecode(encodedSentences, 4); 
+    auto batchDecoded = tokenizer.batchDecode(encodedSentences); 
     std::ostringstream oss;
     oss << "Tokenizer Batch Decode:" << std::endl;
     for (const auto& decoded : batchDecoded) {

@@ -8,7 +8,7 @@ private:
     std::vector<std::string> vocab;                     
     std::unordered_map<std::string, int> tokenToId;        
     std::vector<std::string> idToToken;                   
-    int unknownId = -1;                                 
+    int unknownId = -1;              
 
 public:
     Tokenizer(const std::vector<std::string>& vocabList);

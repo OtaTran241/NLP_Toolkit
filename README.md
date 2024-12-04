@@ -90,7 +90,7 @@ int main() {
 
 1. **Multi-Threaded Processing**  
    - Utilizes C++ standard libraries for concurrent execution of tasks.
-   - Optimized for multi-core CPUs, enabling faster processing of large text datasets.
+   - Optimized for multi-core, enabling faster processing of large text datasets.
 
 2. **Batch Processing for Scalability**  
    - Both `Tokenizer` and `Bag-of-Words` implementations are optimized to process batches of text data in parallel.

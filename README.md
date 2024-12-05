@@ -175,7 +175,8 @@ int main() {
 ## **Future Update**  
 - **Integration with Python (can Pip install)**: Provide Python bindings using Pybind11 for seamless use in Python-based NLP pipelines.
 - **Input file**: Supports input in various formats such as PDF, CSV, API,...
-- **Advanced Features**: Support for lemmatization, named entity recognition, and dependency parsing.  
+- **Advanced Features**: Support for lemmatization, named entity recognition, and dependency parsing.
+- **GPU Support**: Enables faster and more efficient processing through CUDA and GPU.   
 
 ---  
 ## **Contributors**  

@@ -120,7 +120,7 @@ int main() {
    git clone https://github.com/OtaTran241/NLP_Toolkit.git
    cd NLP_Toolkit
    ```
-   **If you are using Visual Studio, you can simply run the 'NLP_Toolkit.sln' file and skip the other steps.**
+   **If you are using Visual Studio, you can simply run the 'NLP_Toolkit.sln' file and skip the other steps. (Window only)**
    
 3. **Build the Library**  
    Make sure you have a C++17-compatible compiler installed. Then, run:

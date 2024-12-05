@@ -8,7 +8,7 @@
 #include <mutex>
 #include <regex>
 
-std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>& tokens, size_t size) {
+std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>& tokens, size_t numThreads) {
     /*
     Input:
         - tokens: A vector of strings (tokens) to be split.
@@ -19,11 +19,11 @@ std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>
         - Divides the tokens evenly among the specified number of threads.
     */
 
-    size_t blockSize = tokens.size() / size;
+    size_t blockSize = tokens.size() / numThreads;
     std::vector<std::vector<std::string>> splitBlocks;
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; i < numThreads; ++i) {
         size_t start = i * blockSize;
-        size_t end = (i == size - 1) ? tokens.size() : (i + 1) * blockSize;
+        size_t end = (i == numThreads - 1) ? tokens.size() : (i + 1) * blockSize;
         splitBlocks.emplace_back(tokens.begin() + start, tokens.begin() + end);
     }
     return splitBlocks;

@@ -93,7 +93,7 @@ int main() {
    - Optimized for multi-core, enabling faster processing of large text datasets.
 
 2. **Batch Processing for Scalability**  
-   - Both `Tokenizer` and `Bag-of-Words` implementations are optimized to process batches of text data in parallel.
+   - `Tokenizer (bacthEncoder and bacthDecoder)`, `Bag-of-Words` and `Embeddings` implementations are optimized to process batches of text data in parallel.
 
 3. **Custom Embeddings**  
    - Generates random embeddings with configurable dimensions to simulate vector space models.  

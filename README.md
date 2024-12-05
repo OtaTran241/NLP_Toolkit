@@ -46,7 +46,6 @@
 Here is an example:
 
 ```cpp
-// Multi-process testing
 void testAllInParallel() {
     HANDLE processes[10];
 

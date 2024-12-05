@@ -116,7 +116,7 @@ void testTokenizerBatchEncode() {
         {"unknown", "hello", "name", "My"}
     };
 
-    auto batchEncoded = tokenizer.batchEncode(sentences);
+    auto batchEncoded = tokenizer.batchEncode(sentences, 5);
     std::ostringstream oss;
     oss << "Tokenizer Batch Encode:" << std::endl;
     for (const auto& encoded : batchEncoded) {
@@ -134,7 +134,7 @@ void testTokenizerBatchDecode() {
         {2, 0, 6, 5}
     };
 
-    auto batchDecoded = tokenizer.batchDecode(encodedSentences); 
+    auto batchDecoded = tokenizer.batchDecode(encodedSentences, 3); 
     std::ostringstream oss;
     oss << "Tokenizer Batch Decode:" << std::endl;
     for (const auto& decoded : batchDecoded) {
@@ -146,7 +146,7 @@ void testTokenizerBatchDecode() {
     synchronizedPrint(oss.str());
 }
 
-// Multi-process testing
+// Multi-thread testing
 void testAllInParallel() {
     HANDLE processes[10];
 
@@ -173,7 +173,7 @@ void testAllInParallel() {
 int main() {
     InitializeCriticalSection(&coutLock);
 
-    std::cout << "Testing Toolkit and Tokenizer with multi-processing:" << std::endl;
+    std::cout << "Testing Toolkit and Tokenizer with multi-threading:" << std::endl;
     std::cout << std::string(30, '-') << std::endl;
     testAllInParallel();
 

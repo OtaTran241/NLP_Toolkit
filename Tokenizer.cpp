@@ -82,24 +82,32 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
     */
 
     size_t numSentences = sentences.size();
-
     size_t maxThreads = std::thread::hardware_concurrency();
 
     if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
-        numThreads = maxThreads;
+        numThreads = maxThreads;  
     }
 
-    std::vector<std::future<std::vector<int>>> futures;
-    std::vector<std::vector<int>> results(numSentences);
+    size_t blockSize = (numSentences + numThreads - 1) / numThreads; 
+    std::vector<std::future<std::vector<std::vector<int>>>> futures;
 
-    for (size_t i = 0; i < numSentences; ++i) {
-        futures.push_back(std::async(std::launch::async, [this, &sentences, i]() {
-            return this->encode(sentences[i]);
+    for (int t = 0; t < numThreads; ++t) {
+        size_t start = t * blockSize;
+        size_t end = std::min(start + blockSize, numSentences);
+
+        futures.push_back(std::async(std::launch::async, [this, &sentences, start, end]() {
+            std::vector<std::vector<int>> blockResult;
+            for (size_t i = start; i < end; ++i) {
+                blockResult.push_back(this->encode(sentences[i])); 
+            }
+            return blockResult;
             }));
     }
 
-    for (size_t i = 0; i < numSentences; ++i) {
-        results[i] = futures[i].get();
+    std::vector<std::vector<int>> results;
+    for (auto& future : futures) {
+        auto blockResult = future.get();
+        results.insert(results.end(), blockResult.begin(), blockResult.end());
     }
 
     return results;
@@ -123,17 +131,28 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
         numThreads = maxThreads;
     }
 
-    std::vector<std::future<std::vector<std::string>>> futures;
-    std::vector<std::vector<std::string>> results(numSentences);
+    size_t blockSize = (numSentences + numThreads - 1) / numThreads;
+    std::vector<std::future<std::vector<std::vector<std::string>>>> futures;
 
-    for (size_t i = 0; i < numSentences; ++i) {
-        futures.push_back(std::async(std::launch::async, [this, &encodedSentences, i]() {
-            return this->decode(encodedSentences[i]);
+    // Xử lý song song bằng các luồng
+    for (int t = 0; t < numThreads; ++t) {
+        size_t start = t * blockSize;
+        size_t end = std::min(start + blockSize, numSentences);
+
+        // Tạo một future cho khối dữ liệu này
+        futures.push_back(std::async(std::launch::async, [this, &encodedSentences, start, end]() {
+            std::vector<std::vector<std::string>> blockResult;
+            for (size_t i = start; i < end; ++i) {
+                blockResult.push_back(this->decode(encodedSentences[i]));
+            }
+            return blockResult;
             }));
     }
 
-    for (size_t i = 0; i < numSentences; ++i) {
-        results[i] = futures[i].get();
+    std::vector<std::vector<std::string>> results;
+    for (auto& future : futures) {
+        auto blockResult = future.get();
+        results.insert(results.end(), blockResult.begin(), blockResult.end());
     }
 
     return results;

@@ -15,7 +15,7 @@ std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>
     /*
     Input:
         - tokens: A vector of strings (tokens) to be split.
-        - size: The number of chunks to divide the tokens into.
+        - numParts: The number of chunks to divide the tokens into.
     Output:
         - A vector of token chunks (vectors).
     Functionality:

@@ -136,7 +136,7 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
     }
 
     size_t blockSize = (numSentences + numThreads - 1) / numThreads;
-    ThreadPool pool(numThreads); // Create a ThreadPool
+    ThreadPool pool(numThreads);
 
     std::vector<std::future<std::vector<std::vector<std::string>>>> futures;
 

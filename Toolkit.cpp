@@ -15,7 +15,7 @@ std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>
     /*
     Input:
         - tokens: A vector of strings (tokens) to be split.
-        - numParts: The number of chunks to divide the tokens into.
+        - size: The number of chunks to divide the tokens into.
     Output:
         - A vector of token chunks (vectors).
     Functionality:
@@ -47,7 +47,8 @@ std::unordered_set<std::string> readFromFileTXT(const std::string& filename) {
         file.close();
     }
     else {
-        throw std::runtime_error("Failed to open file: " + filename);
+        std::cout << "\n\033[31mFailed to open file: " << filename << "\033[0m\n";
+        return items;
     }
 
     return items;

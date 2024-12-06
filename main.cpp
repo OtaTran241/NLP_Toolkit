@@ -28,7 +28,7 @@ void testTokenize() {
     std::vector<std::string> tokens = Toolkit::tokenize(text);
     std::ostringstream oss;
     oss << "Tokens: ";
-    for (const auto& token : tokens) oss << token << " ";
+    for (const auto& token : tokens) oss << token << " | ";
     oss << std::endl;
     synchronizedPrint(oss.str());
 }
@@ -84,7 +84,7 @@ void testStemming() {
 }
 
 void testRemoveSpecialCharacters() {
-    std::string specialCharsFile = "special_characters.txt"; 
+    std::string specialCharsFile = "TXTconfig/special_characters.txt"; 
 
     std::string result = Toolkit::removeSpecialCharacters(text, specialCharsFile, 4);
     std::ostringstream oss;
@@ -94,7 +94,7 @@ void testRemoveSpecialCharacters() {
 }
 
 void testRemoveStopWords() {
-    std::string stopWordsFile = "stop_words.txt";
+    std::string stopWordsFile = "TXTconfig/stop_words.txt";
     std::string result = Toolkit::removeStopWords(text, stopWordsFile, 2);
     std::ostringstream oss;
     oss << "Original Text: " << text << "\n";

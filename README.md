@@ -158,7 +158,7 @@ int main() {
 ---
 
 ## **Code Examples**  
-**You can either use or modify the current 'main.cpp' with existing multi-processing (just update the input) or organize a new 'main.cpp' file.**
+**You can either use or modify the current 'main.cpp' with existing multi-processing just update the input (Window only) or organize a new 'main.cpp' file.**
 Here is an example: 
 ```cpp
 #include "Toolkit.h"

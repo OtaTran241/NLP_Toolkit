@@ -48,7 +48,7 @@
     - **Concurrent task execution**: Tasks are distributed across multiple worker threads, making it easy to execute multiple operations concurrently.
     - **Task queuing**: Tasks can be enqueued and will be executed as soon as a worker thread is available.
     - **Graceful shutdown**: The thread pool can be stopped cleanly, ensuring all pending tasks are completed before termination.
-    - **Return values**: Supports tasks that return values, using `std::future` to obtain the result of a task when it completes.
+    - **Return values**: Supports tasks that return values, using `std::future` to obtain the result of a task when it completes.  
     Here is an example:
 ```cpp
 ThreadPool pool(4); // Creates a pool with 4 threads

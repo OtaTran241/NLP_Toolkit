@@ -37,7 +37,7 @@ ThreadPool pool(4); // Creates a pool with 4 threads
 ```
 
 3. **Batch Processing for Scalability**  
-   - `Tokenizer (bacthEncoder and bacthDecoder)`, `Bag-of-Words` and `Embeddings` implementations are optimized to process batches of text data in parallel.
+   - Both class `Tokenizer`and `Toolkit` implementations are optimized to process batches of text data in parallel.
 
 4. **Custom Embeddings**  
    - Generates random embeddings with configurable dimensions to simulate vector space models.  

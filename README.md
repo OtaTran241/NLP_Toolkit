@@ -36,9 +36,19 @@
 
 - **Stemming**: 
   - Extract the base form of a word, helping reduce vocabulary size in NLP tasks.
-
+    
+- **Remove Special Characters and Remove Stop Words**:
+  - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data.
+    
 - **Dictionary-Based Encoding**: 
   - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).
+ 
+- **Thread Pooling**
+  - The `ThreadPool` class is allows you to manage a collection of worker threads that can execute tasks concurrently. The pool of threads can handle multiple tasks by dispatching them to threads from the pool, which helps avoid the overhead of frequently creating and destroying threads.
+    - **Concurrent task execution**: Tasks are distributed across multiple worker threads, making it easy to execute multiple operations concurrently.
+    - **Task queuing**: Tasks can be enqueued and will be executed as soon as a worker thread is available.
+    - **Graceful shutdown**: The thread pool can be stopped cleanly, ensuring all pending tasks are completed before termination.
+    - **Return values**: Supports tasks that return values, using `std::future` to obtain the result of a task when it completes.
  
 - **Demo of Multi-Processing**:
   - In the `main` function, we demonstrate how various functionalities of the toolkit are tested in parallel using multi-threading. The multi-threading is used to run tests on functions like tokenization, bag-of-words, n-grams, normalization, embeddings, and stemming in parallel, without blocking the execution.

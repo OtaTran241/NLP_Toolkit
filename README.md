@@ -10,40 +10,21 @@
 
 ## Table of Contents
 - [Project Overview](#Project-overview)
-- [Key Features](#Key-Features)
 - [Technical Highlights](#Technical-Highlights)
+- [Key Features](#Key-Features)
 - [Code Examples](#Code-Examples)
 - [Future Update](#Future-Update)
 - [Contributors](#Contributors)
 
 ---
 
-## **Key Features**  
-- **Efficient Tokenization**: 
-  - Tokenize text into words or subwords with support for batch processing and multi-threading.
+## **Technical Highlights**  
 
-- **Bag-of-Words Construction**: 
-  - Generates frequency counts of words in a given dataset using multi-threading for faster computation.
-
-- **N-Gram Support**: 
-  - Extract N-grams from text data to support feature extraction for NLP models.
-
-- **Text Normalization**: 
-  - Convert text to lowercase and remove punctuation efficiently.
-
-- **Custom Word Embeddings**: 
-  - Generate random embeddings with configurable dimensionality for tokens in text.
-
-- **Stemming**: 
-  - Extract the base form of a word, helping reduce vocabulary size in NLP tasks.
-    
-- **Remove Special Characters and Remove Stop Words**:
-  - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data.
-    
-- **Dictionary-Based Encoding**: 
-  - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).
- 
-- **Thread Pooling**
+1. **Multi-Threaded Processing**  
+   - Utilizes C++ standard libraries for concurrent execution of tasks.
+   - Optimized for multi-core, enabling faster processing of large text datasets.
+  
+2. **Thread Pooling**
   - The `ThreadPool` class is allows you to manage a collection of worker threads that can execute tasks concurrently. The pool of threads can handle multiple tasks by dispatching them to threads from the pool, which helps avoid the overhead of frequently creating and destroying threads.
     - **Concurrent task execution**: Tasks are distributed across multiple worker threads, making it easy to execute multiple operations concurrently.
     - **Task queuing**: Tasks can be enqueued and will be executed as soon as a worker thread is available.
@@ -54,8 +35,20 @@ Here is an example to create a `ThreadPool`:
 ```cpp
 ThreadPool pool(4); // Creates a pool with 4 threads
 ```
+
+3. **Batch Processing for Scalability**  
+   - `Tokenizer (bacthEncoder and bacthDecoder)`, `Bag-of-Words` and `Embeddings` implementations are optimized to process batches of text data in parallel.
+
+4. **Custom Embeddings**  
+   - Generates random embeddings with configurable dimensions to simulate vector space models.  
+
+5. **Modern C++ Design**  
+   - Written in C++17, employing modern constructs like `std::async`, `std::unordered_map`, and lambdas for clean, maintainable, and high-performance code.  
+
+6. **Critical Section Synchronization**  
+   - Uses critical sections for thread-safe logging, ensuring consistent and reliable output even in multi-threaded environments.  
  
-- **Demo of Multi-Processing**:
+7. **Demo of Multi-Processing**
   - In the `main` function, we demonstrate how various functionalities of the toolkit are tested in parallel using multi-threading. The multi-threading is used to run tests on functions like tokenization, bag-of-words, n-grams, normalization, embeddings, and stemming in parallel, without blocking the execution.
 
 Here is an example:
@@ -98,25 +91,33 @@ int main() {
     return 0;
 }
 ```
+
 ---
 
-## **Technical Highlights**  
+## **Key Features**  
+- **Efficient Tokenization**: 
+  - Tokenize text into words or subwords with support for batch processing and multi-threading.
 
-1. **Multi-Threaded Processing**  
-   - Utilizes C++ standard libraries for concurrent execution of tasks.
-   - Optimized for multi-core, enabling faster processing of large text datasets.
+- **Bag-of-Words Construction**: 
+  - Generates frequency counts of words in a given dataset using multi-threading for faster computation.
 
-2. **Batch Processing for Scalability**  
-   - `Tokenizer (bacthEncoder and bacthDecoder)`, `Bag-of-Words` and `Embeddings` implementations are optimized to process batches of text data in parallel.
+- **N-Gram Support**: 
+  - Extract N-grams from text data to support feature extraction for NLP models.
 
-3. **Custom Embeddings**  
-   - Generates random embeddings with configurable dimensions to simulate vector space models.  
+- **Text Normalization**: 
+  - Convert text to lowercase and remove punctuation efficiently.
 
-4. **Modern C++ Design**  
-   - Written in C++17, employing modern constructs like `std::async`, `std::unordered_map`, and lambdas for clean, maintainable, and high-performance code.  
+- **Custom Word Embeddings**: 
+  - Generate random embeddings with configurable dimensionality for tokens in text.
 
-5. **Critical Section Synchronization**  
-   - Uses critical sections for thread-safe logging, ensuring consistent and reliable output even in multi-threaded environments.  
+- **Stemming**: 
+  - Extract the base form of a word, helping reduce vocabulary size in NLP tasks.
+    
+- **Remove Special Characters and Remove Stop Words**:
+  - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data.
+    
+- **Dictionary-Based Encoding**: 
+  - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).
 
 ---
 

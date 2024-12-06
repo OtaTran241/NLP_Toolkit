@@ -49,7 +49,7 @@
     - **Task queuing**: Tasks can be enqueued and will be executed as soon as a worker thread is available.
     - **Graceful shutdown**: The thread pool can be stopped cleanly, ensuring all pending tasks are completed before termination.
     - **Return values**: Supports tasks that return values, using `std::future` to obtain the result of a task when it completes.  
-    Here is an example:
+    Here is an example to create a `ThreadPool`:
 ```cpp
 ThreadPool pool(4); // Creates a pool with 4 threads
 ```

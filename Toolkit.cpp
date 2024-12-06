@@ -1,4 +1,5 @@
 ﻿#include "Toolkit.h"
+#include "ThreadPool.h"
 #include <sstream>
 #include <algorithm>
 #include <iostream>
@@ -7,8 +8,10 @@
 #include <future>
 #include <mutex>
 #include <regex>
+#include <unordered_set>
+#include <fstream>
 
-std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>& tokens, size_t numThreads) {
+std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>& tokens, size_t numParts) {
     /*
     Input:
         - tokens: A vector of strings (tokens) to be split.
@@ -19,14 +22,35 @@ std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>
         - Divides the tokens evenly among the specified number of threads.
     */
 
-    size_t blockSize = tokens.size() / numThreads;
-    std::vector<std::vector<std::string>> splitBlocks;
-    for (size_t i = 0; i < numThreads; ++i) {
-        size_t start = i * blockSize;
-        size_t end = (i == numThreads - 1) ? tokens.size() : (i + 1) * blockSize;
-        splitBlocks.emplace_back(tokens.begin() + start, tokens.begin() + end);
+    std::vector<std::vector<std::string>> result(numParts);
+    size_t blockSize = tokens.size() / numParts;
+    size_t remainder = tokens.size() % numParts;
+
+    for (size_t i = 0, start = 0; i < numParts; ++i) {
+        size_t end = start + blockSize + (i < remainder ? 1 : 0);
+        result[i] = std::vector<std::string>(tokens.begin() + start, tokens.begin() + end);
+        start = end;
     }
-    return splitBlocks;
+
+    return result;
+}
+
+std::unordered_set<std::string> readFromFileTXT(const std::string& filename) {
+    std::unordered_set<std::string> items;
+    std::ifstream file(filename);
+    std::string line;
+
+    if (file.is_open()) {
+        while (std::getline(file, line)) {
+            items.insert(line);
+        }
+        file.close();
+    }
+    else {
+        throw std::runtime_error("Failed to open file: " + filename);
+    }
+
+    return items;
 }
 
 std::vector<std::string> Toolkit::tokenize(const std::string& text) {
@@ -61,31 +85,28 @@ std::unordered_map<std::string, int> Toolkit::getBagOfWords(const std::vector<st
     */
 
     size_t maxThreads = std::thread::hardware_concurrency();
-
     if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
         numThreads = maxThreads;
     }
 
-    std::vector<std::future<std::unordered_map<std::string, int>>> futures;
+    std::vector<std::unordered_map<std::string, int>> results(numThreads);
     auto splitBlocks = splitTokens(tokens, numThreads);
 
-    std::mutex mtx;
-    std::unordered_map<std::string, int> combinedResult;
+    ThreadPool pool(numThreads);
 
-    for (const auto& block : splitBlocks) {
-        futures.push_back(std::async(std::launch::async, [&block]() {
-            std::unordered_map<std::string, int> localBag;
-            for (const auto& token : block) {
-                localBag[token]++;
+    for (int i = 0; i < numThreads; ++i) {
+        pool.enqueue([&results, &splitBlocks, i] {
+            for (const auto& token : splitBlocks[i]) {
+                results[i][token]++;
             }
-            return localBag;
-            }));
+            });
     }
 
-    for (auto& future : futures) {
-        auto localBag = future.get();
-        std::lock_guard<std::mutex> lock(mtx);
-        for (const auto& [token, count] : localBag) {
+    pool.~ThreadPool();
+
+    std::unordered_map<std::string, int> combinedResult;
+    for (const auto& result : results) {
+        for (const auto& [token, count] : result) {
             combinedResult[token] += count;
         }
     }
@@ -168,38 +189,38 @@ std::unordered_map<std::string, std::vector<float>> Toolkit::getEmbeddings(const
     */
 
     size_t maxThreads = std::thread::hardware_concurrency();
-
     if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
-        numThreads = maxThreads; 
+        numThreads = maxThreads;
     }
 
-    std::vector<std::future<std::unordered_map<std::string, std::vector<float>>>> futures;
+    std::vector<std::unordered_map<std::string, std::vector<float>>> results(numThreads);
     auto splitBlocks = splitTokens(tokens, numThreads);
-    std::unordered_map<std::string, std::vector<float>> combinedEmbeddings;
-    std::mutex mtx;
 
-    for (const auto& block : splitBlocks) {
-        futures.push_back(std::async(std::launch::async, [&block, embeddingSize]() {
-            std::unordered_map<std::string, std::vector<float>> localEmbeddings;
+    ThreadPool pool(numThreads);
+
+    for (int i = 0; i < numThreads; ++i) {
+        pool.enqueue([&results, &splitBlocks, i, embeddingSize] {
             std::random_device rd;
             std::mt19937 gen(rd());
             std::uniform_real_distribution<> dis(-1.0, 1.0);
 
-            for (const auto& token : block) {
+            for (const auto& token : splitBlocks[i]) {
                 std::vector<float> embedding(embeddingSize);
                 for (auto& value : embedding) {
                     value = static_cast<float>(dis(gen));
                 }
-                localEmbeddings[token] = embedding;
+                results[i][token] = embedding;
             }
-            return localEmbeddings;
-            }));
+            });
     }
 
-    for (auto& future : futures) {
-        auto localEmbeddings = future.get();
-        std::lock_guard<std::mutex> lock(mtx);
-        combinedEmbeddings.insert(localEmbeddings.begin(), localEmbeddings.end());
+    pool.~ThreadPool();
+
+    std::unordered_map<std::string, std::vector<float>> combinedEmbeddings;
+    for (const auto& result : results) {
+        for (const auto& [token, embedding] : result) {
+            combinedEmbeddings[token] = embedding;
+        }
     }
 
     return combinedEmbeddings;
@@ -249,4 +270,106 @@ std::string Toolkit::stem(const std::string& text) {
     }
 
     return stemmed;
+}
+
+std::string Toolkit::removeSpecialCharacters(const std::string& text, const std::string& specialCharFile, int numThreads) {
+    /*
+    Input:
+        - text: A string to process.
+        - specialCharFile: Path to a file containing special characters (one per line).
+        - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
+    Output:
+        - A string with special characters removed.
+    */
+
+    auto specialChars = readFromFileTXT(specialCharFile);
+
+    size_t maxThreads = std::thread::hardware_concurrency();
+    if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
+        numThreads = maxThreads;
+    }
+
+    std::vector<std::string> results(numThreads);
+    std::vector<std::string> splitText(numThreads);
+
+    size_t chunkSize = text.size() / numThreads;
+    for (int i = 0; i < numThreads; ++i) {
+        size_t start = i * chunkSize;
+        size_t end = (i == numThreads - 1) ? text.size() : (i + 1) * chunkSize;
+        splitText[i] = text.substr(start, end - start);
+    }
+
+    ThreadPool pool(numThreads);
+
+    for (int i = 0; i < numThreads; ++i) {
+        pool.enqueue([&splitText, &specialChars, &results, i] {
+            std::string result;
+            for (char ch : splitText[i]) {
+                if (specialChars.find(std::string(1, ch)) == specialChars.end()) {
+                    result += ch;
+                }
+            }
+            results[i] = result;
+            });
+    }
+
+    pool.~ThreadPool(); 
+
+    std::string result;
+    for (const auto& part : results) {
+        result += part;
+    }
+
+    return result;
+}
+
+std::string Toolkit::removeStopWords(const std::string& text, const std::string& stopWordsFile, int numThreads) {
+    /*
+    Input:
+        - text: A string to process.
+        - stopWordsFile: Path to a file containing stop words (one per line).
+        - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
+    Output:
+        - A string with stop words removed.
+    */
+
+    auto stopWords = readFromFileTXT(stopWordsFile);
+    auto tokens = tokenize(text);
+
+    size_t maxThreads = std::thread::hardware_concurrency();
+    if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
+        numThreads = maxThreads;
+    }
+
+    std::vector<std::vector<std::string>> results(numThreads);
+    auto splitBlocks = splitTokens(tokens, numThreads);
+
+    ThreadPool pool(numThreads);
+
+    for (int i = 0; i < numThreads; ++i) {
+        pool.enqueue([&results, &splitBlocks, &stopWords, i] {
+            for (const auto& token : splitBlocks[i]) {
+                if (stopWords.find(token) == stopWords.end()) {
+                    results[i].push_back(token);
+                }
+            }
+            });
+    }
+
+    pool.~ThreadPool(); 
+
+    std::vector<std::string> filteredTokens;
+    for (const auto& result : results) {
+        filteredTokens.insert(filteredTokens.end(), result.begin(), result.end());
+    }
+
+    std::ostringstream result;
+    for (size_t i = 0; i < filteredTokens.size(); ++i) {
+        result << filteredTokens[i];
+        if (i != filteredTokens.size() - 1) {
+            result << " ";
+        }
+    }
+
+    return result.str();
 }

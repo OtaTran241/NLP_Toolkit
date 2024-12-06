@@ -1,4 +1,5 @@
 ﻿#include "Tokenizer.h"
+#include "ThreadPool.h"
 #include <thread>
 #include <future>
 
@@ -85,20 +86,23 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
     size_t maxThreads = std::thread::hardware_concurrency();
 
     if (numThreads <= 0 || numThreads > static_cast<int>(maxThreads)) {
-        numThreads = maxThreads;  
+        numThreads = maxThreads;
     }
 
-    size_t blockSize = (numSentences + numThreads - 1) / numThreads; 
+    size_t blockSize = (numSentences + numThreads - 1) / numThreads;
+    ThreadPool pool(numThreads);
+
     std::vector<std::future<std::vector<std::vector<int>>>> futures;
 
     for (int t = 0; t < numThreads; ++t) {
         size_t start = t * blockSize;
         size_t end = std::min(start + blockSize, numSentences);
 
-        futures.push_back(std::async(std::launch::async, [this, &sentences, start, end]() {
+        // Use the ThreadPool to enqueue tasks
+        futures.push_back(pool.enqueue([this, &sentences, start, end]() {
             std::vector<std::vector<int>> blockResult;
             for (size_t i = start; i < end; ++i) {
-                blockResult.push_back(this->encode(sentences[i])); 
+                blockResult.push_back(this->encode(sentences[i]));
             }
             return blockResult;
             }));
@@ -132,15 +136,16 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
     }
 
     size_t blockSize = (numSentences + numThreads - 1) / numThreads;
+    ThreadPool pool(numThreads); // Create a ThreadPool
+
     std::vector<std::future<std::vector<std::vector<std::string>>>> futures;
 
-    // Xử lý song song bằng các luồng
     for (int t = 0; t < numThreads; ++t) {
         size_t start = t * blockSize;
         size_t end = std::min(start + blockSize, numSentences);
 
-        // Tạo một future cho khối dữ liệu này
-        futures.push_back(std::async(std::launch::async, [this, &encodedSentences, start, end]() {
+        // Use the ThreadPool to enqueue tasks
+        futures.push_back(pool.enqueue([this, &encodedSentences, start, end]() {
             std::vector<std::vector<std::string>> blockResult;
             for (size_t i = start; i < end; ++i) {
                 blockResult.push_back(this->decode(encodedSentences[i]));

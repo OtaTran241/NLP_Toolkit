@@ -15,7 +15,7 @@ CRITICAL_SECTION coutLock;
 std::vector<std::string> tokens = { "hello", "world", "hello", "my", "name", "is", "My", "what", "is", "your", "name" };
 std::vector<std::string> vocab = { "hello", "world", "<UNK>", "my", "name", "is", "<UNK>", "My" };
 Tokenizer tokenizer(vocab);
-std::string text = "Hello, world! This is a test for Tokenizer.";
+std::string text = "Hello, @World! This is a test for NLP(Toolkit).";
 
 void synchronizedPrint(const std::string& text) {
     EnterCriticalSection(&coutLock);
@@ -83,6 +83,26 @@ void testStemming() {
     synchronizedPrint("Stemmed: " + stemmed + "\n");
 }
 
+void testRemoveSpecialCharacters() {
+    std::string specialCharsFile = "special_characters.txt"; 
+
+    std::string result = Toolkit::removeSpecialCharacters(text, specialCharsFile, 4);
+    std::ostringstream oss;
+    oss << "Original Text: " << text << "\n";
+    oss << "After Removing Special Characters: " << result << "\n";
+    synchronizedPrint(oss.str());
+}
+
+void testRemoveStopWords() {
+    std::string stopWordsFile = "stop_words.txt";
+    std::string result = Toolkit::removeStopWords(text, stopWordsFile, 2);
+    std::ostringstream oss;
+    oss << "Original Text: " << text << "\n";
+    oss << "After Removing Stop Words: " << result << "\n";
+    synchronizedPrint(oss.str());
+}
+
+
 // Test Tokenizer
 void testTokenizerEncode() {
     std::vector<std::string> sentence = { "hello", "unknown", "world", "is", "name" };
@@ -148,7 +168,7 @@ void testTokenizerBatchDecode() {
 
 // Multi-thread testing
 void testAllInParallel() {
-    HANDLE processes[10];
+    HANDLE processes[12];
 
     // Create threads for each test function
     processes[0] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenize(); return 0; }, nullptr, 0, nullptr);
@@ -157,13 +177,15 @@ void testAllInParallel() {
     processes[3] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testNormalization(); return 0; }, nullptr, 0, nullptr);
     processes[4] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testEmbeddings(); return 0; }, nullptr, 0, nullptr);
     processes[5] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testStemming(); return 0; }, nullptr, 0, nullptr);
-    processes[6] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerEncode(); return 0; }, nullptr, 0, nullptr);
-    processes[7] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerDecode(); return 0; }, nullptr, 0, nullptr);
-    processes[8] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerBatchEncode(); return 0; }, nullptr, 0, nullptr);
-    processes[9] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerBatchDecode(); return 0; }, nullptr, 0, nullptr);
+    processes[6] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testRemoveSpecialCharacters(); return 0; }, nullptr, 0, nullptr);
+    processes[7] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testRemoveStopWords(); return 0; }, nullptr, 0, nullptr);
+    processes[8] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerEncode(); return 0; }, nullptr, 0, nullptr);
+    processes[9] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerDecode(); return 0; }, nullptr, 0, nullptr);
+    processes[10] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerBatchEncode(); return 0; }, nullptr, 0, nullptr);
+    processes[11] = CreateThread(nullptr, 0, [](LPVOID) -> DWORD { testTokenizerBatchDecode(); return 0; }, nullptr, 0, nullptr);
 
     // Wait for all threads to complete
-    WaitForMultipleObjects(10, processes, TRUE, INFINITE);
+    WaitForMultipleObjects(12, processes, TRUE, INFINITE);
 
     for (auto process : processes) {
         CloseHandle(process);

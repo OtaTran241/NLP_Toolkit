@@ -17,4 +17,8 @@ public:
     static std::unordered_map<std::string, std::vector<float>> getEmbeddings(const std::vector<std::string>& tokens, size_t vectorEmbeddingSize = 300, int numThreads = 2);
 
     static std::string stem(const std::string& text);
+
+    static std::string removeSpecialCharacters(const std::string& text, const std::string& specialCharFile, int numThreads = 2);
+
+    static std::string removeStopWords(const std::string& text, const std::string& stopWordsFile, int numThreads = 2);
 };

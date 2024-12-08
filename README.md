@@ -5,10 +5,7 @@
 
 ## **Project overview**  
 **NLP Toolkit** is a high-performance library written in C++ designed to address the needs of Natural Language Processing (NLP) applications. By leveraging advanced C++ techniques such as multi-threading, batch processing, this toolkit is capable of handling large-scale text data efficiently. The library provides core NLP functionalities such as tokenization, stemming, embeddings(for simulation purposes only), and more, and can be easily extended for real-world applications.
-
----
-
-## **Use Cases**  
+### **Use Cases**  
 - **Text Preprocessing**: Normalize, tokenize, and clean text data for downstream NLP tasks.  
 - **Feature Extraction**: Create Bag-of-Words or N-gram representations for machine learning models.  
 - **Custom NLP Pipelines**: Use embeddings and stemming to build custom NLP solutions.  
@@ -18,7 +15,6 @@
 
 ## Table of Contents
 - [Project Overview](#Project-overview)
-- [Use Cases](#Use-Cases)
 - [Technical Highlights](#Technical-Highlights)
 - [Key Features](#Key-Features)
 - [Code Examples](#Code-Examples)

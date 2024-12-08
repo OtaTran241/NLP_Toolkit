@@ -8,8 +8,17 @@
 
 ---
 
+## **Use Cases**  
+- **Text Preprocessing**: Normalize, tokenize, and clean text data for downstream NLP tasks.  
+- **Feature Extraction**: Create Bag-of-Words or N-gram representations for machine learning models.  
+- **Custom NLP Pipelines**: Use embeddings and stemming to build custom NLP solutions.  
+- **Scalable Encoding**: Efficiently encode large datasets into ID sequences for deep learning models.
+
+---
+
 ## Table of Contents
 - [Project Overview](#Project-overview)
+- [Use Cases](#Use-Cases)
 - [Technical Highlights](#Technical-Highlights)
 - [Key Features](#Key-Features)
 - [Code Examples](#Code-Examples)
@@ -127,14 +136,6 @@ auto batchEncoded = tokenizer.batchEncode(sentences, 5, "MyOutputs/Output_BatchE
     
 - **Dictionary-Based Encoding**: 
   - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).
-
----
-
-## **Use Cases**  
-- **Text Preprocessing**: Normalize, tokenize, and clean text data for downstream NLP tasks.  
-- **Feature Extraction**: Create Bag-of-Words or N-gram representations for machine learning models.  
-- **Custom NLP Pipelines**: Use embeddings and stemming to build custom NLP solutions.  
-- **Scalable Encoding**: Efficiently encode large datasets into ID sequences for deep learning models.
 
 ---
 

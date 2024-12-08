@@ -100,14 +100,17 @@ int main() {
 ---
 
 ## **Key Features**  
-**All outputs of the tasks will be saved to a .txt file (default is Outputs.txt). You can modify the file path if desired.**
+**All outputs of the tasks will be saved to a .txt file (default is Outputs.txt, "" to not write outputs to a .txt file). You can modify the file path if desired.**
 Here is an example:
 ```cpp
-// Change file path to "MyOutputs/Output_BagOfWords.txt"
+// Change output file path to "MyOutputs/Output_BagOfWords.txt"
 auto bag = Toolkit::getBagOfWords(tokens, 4, "MyOutputs/Output_BagOfWords.txt");
 
-// Change file path to "MyOutputs/Output_BatchEncode.txt"
+// Change output file path to "MyOutputs/Output_BatchEncode.txt"
 auto batchEncoded = tokenizer.batchEncode(sentences, 5, "MyOutputs/Output_BatchEncode.txt");
+
+// Do not write outputs to txt
+auto decoded = tokenizer.decode(encoded, "");
 ```
 - **Efficient Tokenization**: 
   - Tokenize text into words or subwords with support for batch processing and multi-threading.

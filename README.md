@@ -1,5 +1,5 @@
 
-# NLP Toolkit: A High-Performance C++ Library for Natural Language Processing  
+# NLP Toolkit: Library for Natural Language Processing  
 
 ---
 

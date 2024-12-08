@@ -100,7 +100,7 @@ Here is an example:
 ```cpp
 auto bag = Toolkit::getBagOfWords(tokens, 4, "MyOutputs/Output_BagOfWords.txt"); // Change file path to "MyOutputs/Output_BagOfWords.txt"
 
-auto ngrams = Toolkit::getNGrams(tokens, n, "MyOutputs/Output_NGrams.txt"); // Change file path to "MyOutputs/Output_NGrams.txt"
+auto batchEncoded = tokenizer.batchEncode(sentences, 5, "MyOutputs/Output_BatchEncode.txt"); // Change file path to "MyOutputs/Output_BatchEncode.txt"
 ```
 - **Efficient Tokenization**: 
   - Tokenize text into words or subwords with support for batch processing and multi-threading.

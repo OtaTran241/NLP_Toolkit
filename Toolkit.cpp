@@ -21,7 +21,7 @@ void writeToFile(const std::string& taskName, const OutputType& output, const st
             - std::unordered_map<std::string, int>
             - std::unordered_map<std::string, std::vector<float>>
             - std::string
-        - fileName: A string specifying the name of the file to write the output to.
+        - fileName: A string specifying the name of the file to write the output to (return if fileName = "").
     Output:
         - None (void). The function writes formatted data to the specified file.
     Functionality:
@@ -34,10 +34,14 @@ void writeToFile(const std::string& taskName, const OutputType& output, const st
             - For strings: Writes the string directly.
         - Ensures the file is properly closed after writing.
     */
+    if (fileName == "") {
+        std::cout << "\033[33mSkip write task: " << taskName << "\033[0m\n";
+        return;
+    }
 
     std::ofstream outFile(fileName, std::ios::app);
     if (!outFile) {
-        std::cerr << "\033[31mFailed to open file: " << fileName << "\033[0m\n";
+        std::cout << "\033[31mFailed to open file: " << fileName << "\033[0m\n";
         return;
     }
 
@@ -143,7 +147,7 @@ std::vector<std::string> Toolkit::tokenize(const std::string& text, const std::s
     /*
     Input:
         - text: A string to be tokenized.
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of tokens (words).
     Functionality:
@@ -167,7 +171,7 @@ std::unordered_map<std::string, int> Toolkit::getBagOfWords(const std::vector<st
     Input:
         - tokens: A vector of strings (tokens).
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - An unordered map where keys are words and values are their frequencies.
     Functionality:
@@ -210,7 +214,7 @@ std::vector<std::string> Toolkit::getNGrams(const std::vector<std::string>& toke
     Input:
         - tokens: A vector of strings (tokens).
         - n: The desired n-gram size.
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of n-grams, where each n-gram is a string formed by concatenating `n` consecutive tokens.
     Functionality:
@@ -240,7 +244,7 @@ std::string Toolkit::toLower(const std::string& text, const std::string& logFile
     /*
     Input:
         - text: A string to be converted to lowercase.
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A new string where all uppercase letters are converted to lowercase.
     Functionality:
@@ -258,7 +262,7 @@ std::string Toolkit::removePunctuation(const std::string& text, const std::strin
     /*
     Input:
         - text: A string from which punctuation will be removed.
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A new string with all punctuation characters removed.
     Functionality:
@@ -283,7 +287,7 @@ std::unordered_map<std::string, std::vector<float>> Toolkit::getEmbeddings(const
         - tokens: A vector of strings for which embeddings will be generated.
         - embeddingSize: The size of the embedding vector for each token.
         - numThreads: The number of threads to use for parallel processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - An unordered map where keys are tokens and values are randomly generated embedding vectors.
     Functionality:
@@ -333,7 +337,7 @@ std::string Toolkit::stem(const std::string& text, const std::string& logFile) {
     /*
     Input:
         - text: A word to be stemmed.
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - The stemmed version of the input word.
     Functionality:
@@ -383,7 +387,7 @@ std::string Toolkit::removeSpecialCharacters(const std::string& text, const std:
         - text: A string to process.
         - specialCharFile: Path to a file containing special characters (one per line).
         - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A string with special characters removed.
     */
@@ -436,7 +440,7 @@ std::string Toolkit::removeStopWords(const std::string& text, const std::string&
         - text: A string to process.
         - stopWordsFile: Path to a file containing stop words (one per line).
         - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A string with stop words removed.
     */

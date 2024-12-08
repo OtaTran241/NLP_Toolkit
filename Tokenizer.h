@@ -13,9 +13,9 @@ private:
 public:
     Tokenizer(const std::vector<std::string>& vocabList);
 
-    std::vector<int> encode(const std::vector<std::string>& tokens);
+    std::vector<int> encode(const std::vector<std::string>& tokens, const std::string& logFile = "Outputs.txt");
 
-    std::vector<std::string> decode(const std::vector<int>& ids);
+    std::vector<std::string> decode(const std::vector<int>& ids, const std::string& logFile = "Outputs.txt");
 
     std::vector<std::vector<int>> batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads = 2, const std::string& logFile = "Outputs.txt");
 

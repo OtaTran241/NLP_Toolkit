@@ -28,10 +28,11 @@ Tokenizer::Tokenizer(const std::vector<std::string>& vocabList) : vocab(vocabLis
     }
 }
 
-std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens) {
+std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens, const std::string& logFile) {
     /*
     Input:
         - tokens: A vector of strings to encode.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of integers representing the IDs of the tokens.
     Functionality:
@@ -48,13 +49,15 @@ std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens) {
         }
     }
 
+    writeToFile("Encode", encodedTokens, logFile);
     return encodedTokens;
 }
 
-std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids) {
+std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids, const std::string& logFile) {
     /*
     Input:
         - ids: A vector of token IDs to decode.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of strings representing the decoded tokens.
     Functionality:
@@ -71,6 +74,7 @@ std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids) {
         }
     }
 
+    writeToFile("Decode", decodedTokens, logFile);
     return decodedTokens;
 }
 
@@ -79,7 +83,7 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
     Input:
         - sentences: A batch of token sequences.
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of vectors, where each inner vector contains encoded token IDs for a sentence.
     Functionality:
@@ -106,7 +110,7 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
         futures.push_back(pool.enqueue([this, &sentences, start, end]() {
             std::vector<std::vector<int>> blockResult;
             for (size_t i = start; i < end; ++i) {
-                blockResult.push_back(this->encode(sentences[i]));
+                blockResult.push_back(this->encode(sentences[i],""));
             }
             return blockResult;
             }));
@@ -127,7 +131,7 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
     Input:
         - encodedSentences: A batch of token ID sequences.
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
-        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt", don't write if logFile = "").
     Output:
         - A vector of vectors, where each inner vector contains decoded tokens for a sentence.
     Functionality:
@@ -154,7 +158,7 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
         futures.push_back(pool.enqueue([this, &encodedSentences, start, end]() {
             std::vector<std::vector<std::string>> blockResult;
             for (size_t i = start; i < end; ++i) {
-                blockResult.push_back(this->decode(encodedSentences[i]));
+                blockResult.push_back(this->decode(encodedSentences[i],""));
             }
             return blockResult;
             }));

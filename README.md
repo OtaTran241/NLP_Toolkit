@@ -179,8 +179,8 @@ int main() {
     std::vector<std::string> batch = {"Hello world", "Tokenization is fast"};
 
     // Tokenization
-    auto tokens = Toolkit::tokenize(text);
-    auto ngrams = Toolkit::getNGrams(tokens, 2);
+    auto tokens = Toolkit::tokenize(text, "tokenize_output.txt");
+    auto ngrams = Toolkit::getNGrams(tokens, 2, "2Grams_output.txt");
 
     // Normalization
     std::string lowerText = Toolkit::toLower(text);

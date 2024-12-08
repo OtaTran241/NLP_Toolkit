@@ -2,14 +2,99 @@
 #include "ThreadPool.h"
 #include <sstream>
 #include <algorithm>
-#include <iostream>
 #include <random>
 #include <thread>
 #include <future>
 #include <mutex>
 #include <regex>
 #include <unordered_set>
-#include <fstream>
+
+void writeToFile(const std::string& taskName, const OutputType& output, const std::string& fileName) {
+    /*
+    Input:
+        - taskName: A string representing the name of the task.
+        - output: A variant (std::variant) containing various possible data types:
+            - std::vector<int>
+            - std::vector<std::vector<int>>
+            - std::vector<std::string>
+            - std::vector<std::vector<std::string>>
+            - std::unordered_map<std::string, int>
+            - std::unordered_map<std::string, std::vector<float>>
+            - std::string
+        - fileName: A string specifying the name of the file to write the output to.
+    Output:
+        - None (void). The function writes formatted data to the specified file.
+    Functionality:
+        - Opens the specified file in append mode. If the file cannot be opened, prints an error message.
+        - Writes a header with the task name to the file.
+        - Processes the `output` based on its type and writes its contents in a human-readable format to the file.
+            - For vectors of integers or strings: Writes each element, separating them by spaces or newlines.
+            - For nested vectors: Writes inner vectors on separate lines.
+            - For unordered maps: Writes key-value pairs, with values formatted appropriately.
+            - For strings: Writes the string directly.
+        - Ensures the file is properly closed after writing.
+    */
+
+    std::ofstream outFile(fileName, std::ios::app);
+    if (!outFile) {
+        std::cerr << "\033[31mFailed to open file: " << fileName << "\033[0m\n";
+        return;
+    }
+
+    outFile << "======Task: " << taskName << "======\n";
+
+    std::visit([&outFile](auto&& value) {
+        using T = std::decay_t<decltype(value)>;
+
+        if constexpr (std::is_same_v<T, std::vector<int>>) {
+            for (const auto& item : value) {
+                outFile << item << " ";
+            }
+            outFile << "\n";
+        }
+        else if constexpr (std::is_same_v<T, std::vector<std::vector<int>>>) {
+            for (const auto& vec : value) {
+                for (const auto& item : vec) {
+                    outFile << item << " ";
+                }
+                outFile << "\n";
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+            for (const auto& item : value) {
+                outFile << item << "\n";
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::vector<std::vector<std::string>>>) {
+            for (const auto& vec : value) {
+                for (const auto& item : vec) {
+                    outFile << item << " ";
+                }
+                outFile << "\n";
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::unordered_map<std::string, int>>) {
+            for (const auto& pair : value) {
+                outFile << pair.first << ": " << pair.second << "\n";
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::unordered_map<std::string, std::vector<float>>>) {
+            for (const auto& pair : value) {
+                outFile << pair.first << ": ";
+                for (const auto& num : pair.second) {
+                    outFile << num << " ";
+                }
+                outFile << "\n";
+            }
+        }
+        else if constexpr (std::is_same_v<T, std::string>) {
+            outFile << value << "\n";
+        }
+
+        }, output);
+
+    outFile.close();
+}
 
 std::vector<std::vector<std::string>> splitTokens(const std::vector<std::string>& tokens, size_t numParts) {
     /*
@@ -54,10 +139,11 @@ std::unordered_set<std::string> readFromFileTXT(const std::string& filename) {
     return items;
 }
 
-std::vector<std::string> Toolkit::tokenize(const std::string& text) {
+std::vector<std::string> Toolkit::tokenize(const std::string& text, const std::string& logFile) {
     /*
     Input:
         - text: A string to be tokenized.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A vector of tokens (words).
     Functionality:
@@ -71,14 +157,17 @@ std::vector<std::string> Toolkit::tokenize(const std::string& text) {
     while (stream >> word) {
         tokens.push_back(word);
     }
+
+    writeToFile("Tokenize", tokens, logFile);
     return tokens;
 }
 
-std::unordered_map<std::string, int> Toolkit::getBagOfWords(const std::vector<std::string>& tokens, int numThreads) {
+std::unordered_map<std::string, int> Toolkit::getBagOfWords(const std::vector<std::string>& tokens, int numThreads, const std::string& logFile) {
     /*
     Input:
         - tokens: A vector of strings (tokens).
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - An unordered map where keys are words and values are their frequencies.
     Functionality:
@@ -112,14 +201,16 @@ std::unordered_map<std::string, int> Toolkit::getBagOfWords(const std::vector<st
         }
     }
 
+    writeToFile("Bag Of Words", combinedResult, logFile);
     return combinedResult;
 }
 
-std::vector<std::string> Toolkit::getNGrams(const std::vector<std::string>& tokens, int n) {
+std::vector<std::string> Toolkit::getNGrams(const std::vector<std::string>& tokens, int n, const std::string& logFile) {
     /*
     Input:
         - tokens: A vector of strings (tokens).
         - n: The desired n-gram size.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A vector of n-grams, where each n-gram is a string formed by concatenating `n` consecutive tokens.
     Functionality:
@@ -139,13 +230,17 @@ std::vector<std::string> Toolkit::getNGrams(const std::vector<std::string>& toke
         }
         ngrams.push_back(ngram.str());
     }
+
+    std::string task = std::to_string(n) + "-Grams";
+    writeToFile(task, ngrams, logFile);
     return ngrams;
 }
 
-std::string Toolkit::toLower(const std::string& text) {
+std::string Toolkit::toLower(const std::string& text, const std::string& logFile) {
     /*
     Input:
         - text: A string to be converted to lowercase.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A new string where all uppercase letters are converted to lowercase.
     Functionality:
@@ -154,13 +249,16 @@ std::string Toolkit::toLower(const std::string& text) {
 
     std::string result = text;
     std::transform(result.begin(), result.end(), result.begin(), ::tolower);
+
+    writeToFile("To Lower", result, logFile);
     return result;
 }
 
-std::string Toolkit::removePunctuation(const std::string& text) {
+std::string Toolkit::removePunctuation(const std::string& text, const std::string& logFile) {
     /*
     Input:
         - text: A string from which punctuation will be removed.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A new string with all punctuation characters removed.
     Functionality:
@@ -174,15 +272,18 @@ std::string Toolkit::removePunctuation(const std::string& text) {
             result += ch;
         }
     }
+
+    writeToFile("Remove Punctuation", result, logFile);
     return result;
 }
 
-std::unordered_map<std::string, std::vector<float>> Toolkit::getEmbeddings(const std::vector<std::string>& tokens, size_t embeddingSize, int numThreads) {
+std::unordered_map<std::string, std::vector<float>> Toolkit::getEmbeddings(const std::vector<std::string>& tokens, size_t embeddingSize, int numThreads, const std::string& logFile) {
     /*
     Input:
         - tokens: A vector of strings for which embeddings will be generated.
         - embeddingSize: The size of the embedding vector for each token.
         - numThreads: The number of threads to use for parallel processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - An unordered map where keys are tokens and values are randomly generated embedding vectors.
     Functionality:
@@ -224,13 +325,15 @@ std::unordered_map<std::string, std::vector<float>> Toolkit::getEmbeddings(const
         }
     }
 
+    writeToFile("Embeddings", combinedEmbeddings, logFile);
     return combinedEmbeddings;
 }
 
-std::string Toolkit::stem(const std::string& text) {
+std::string Toolkit::stem(const std::string& text, const std::string& logFile) {
     /*
     Input:
         - text: A word to be stemmed.
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - The stemmed version of the input word.
     Functionality:
@@ -270,15 +373,17 @@ std::string Toolkit::stem(const std::string& text) {
         return text;
     }
 
+    writeToFile("Stem", stemmed, logFile);
     return stemmed;
 }
 
-std::string Toolkit::removeSpecialCharacters(const std::string& text, const std::string& specialCharFile, int numThreads) {
+std::string Toolkit::removeSpecialCharacters(const std::string& text, const std::string& specialCharFile, int numThreads, const std::string& logFile) {
     /*
     Input:
         - text: A string to process.
         - specialCharFile: Path to a file containing special characters (one per line).
         - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A string with special characters removed.
     */
@@ -321,15 +426,17 @@ std::string Toolkit::removeSpecialCharacters(const std::string& text, const std:
         result += part;
     }
 
+    writeToFile("Remove Special Characters", result, logFile);
     return result;
 }
 
-std::string Toolkit::removeStopWords(const std::string& text, const std::string& stopWordsFile, int numThreads) {
+std::string Toolkit::removeStopWords(const std::string& text, const std::string& stopWordsFile, int numThreads, const std::string& logFile) {
     /*
     Input:
         - text: A string to process.
         - stopWordsFile: Path to a file containing stop words (one per line).
         - numThreads: Number of threads for parallel processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A string with stop words removed.
     */
@@ -372,5 +479,6 @@ std::string Toolkit::removeStopWords(const std::string& text, const std::string&
         }
     }
 
+    writeToFile("Remove Stop Words", result.str(), logFile);
     return result.str();
 }

@@ -1,5 +1,6 @@
 ﻿#include "Tokenizer.h"
 #include "ThreadPool.h"
+#include "Toolkit.h"
 #include <thread>
 #include <future>
 
@@ -46,6 +47,7 @@ std::vector<int> Tokenizer::encode(const std::vector<std::string>& tokens) {
             encodedTokens.push_back(unknownId);
         }
     }
+
     return encodedTokens;
 }
 
@@ -68,14 +70,16 @@ std::vector<std::string> Tokenizer::decode(const std::vector<int>& ids) {
             throw std::out_of_range("Invalid token ID in decode.");
         }
     }
+
     return decodedTokens;
 }
 
-std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads) {
+std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads, const std::string& logFile) {
     /*
     Input:
         - sentences: A batch of token sequences.
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A vector of vectors, where each inner vector contains encoded token IDs for a sentence.
     Functionality:
@@ -114,14 +118,16 @@ std::vector<std::vector<int>> Tokenizer::batchEncode(const std::vector<std::vect
         results.insert(results.end(), blockResult.begin(), blockResult.end());
     }
 
+    writeToFile("Batch Encode", results, logFile);
     return results;
 }
 
-std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<std::vector<int>>& encodedSentences, int numThreads) {
+std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<std::vector<int>>& encodedSentences, int numThreads, const std::string& logFile) {
     /*
     Input:
         - encodedSentences: A batch of token ID sequences.
         - numThreads: The number of threads to use for processing (default is 2 and -1 is get all).
+        - logFile: A string specifying the name of the file to write the output to (default is "Outputs.txt").
     Output:
         - A vector of vectors, where each inner vector contains decoded tokens for a sentence.
     Functionality:
@@ -160,5 +166,6 @@ std::vector<std::vector<std::string>> Tokenizer::batchDecode(const std::vector<s
         results.insert(results.end(), blockResult.begin(), blockResult.end());
     }
 
+    writeToFile("Batch Decode", results, logFile);
     return results;
 }

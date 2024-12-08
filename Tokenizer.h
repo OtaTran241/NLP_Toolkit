@@ -17,7 +17,7 @@ public:
 
     std::vector<std::string> decode(const std::vector<int>& ids);
 
-    std::vector<std::vector<int>> batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads = 2);
+    std::vector<std::vector<int>> batchEncode(const std::vector<std::vector<std::string>>& sentences, int numThreads = 2, const std::string& logFile = "Outputs.txt");
 
-    std::vector<std::vector<std::string>> batchDecode(const std::vector<std::vector<int>>& encodedSentences, int numThreads = 2);
+    std::vector<std::vector<std::string>> batchDecode(const std::vector<std::vector<int>>& encodedSentences, int numThreads = 2, const std::string& logFile = "Outputs.txt");
 };

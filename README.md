@@ -95,6 +95,11 @@ int main() {
 ---
 
 ## **Key Features**  
+**All outputs of the tasks will be saved to a .txt file (default is Outputs.txt). You can modify the file path if desired.**
+Here is an example:
+```cpp
+auto bag = Toolkit::getBagOfWords(tokens, 4, "MyOutputs/Outputs.txt"); // Change file path to "MyOutputs/Outputs.txt"
+```
 - **Efficient Tokenization**: 
   - Tokenize text into words or subwords with support for batch processing and multi-threading.
 

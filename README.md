@@ -131,7 +131,7 @@ auto decoded = tokenizer.decode(encoded, "");
   - Extract the base form of a word, helping reduce vocabulary size in NLP tasks.
     
 - **Remove Special Characters and Remove Stop Words**:
-  - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data.
+  - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data, you can update two this .txt files to customize them.
     
 - **Dictionary-Based Encoding**: 
   - Provides an efficient `Tokenizer` class for encoding and decoding text into/from IDs, with robust handling of unknown words (`<UNK>`).

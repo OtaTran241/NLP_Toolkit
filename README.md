@@ -130,7 +130,7 @@ auto decoded = tokenizer.decode(encoded, "");
 - **Stemming**: 
   - Extract the base form of a word, helping reduce vocabulary size in NLP tasks.
     
-- **Remove Special Characters and Remove Stop Words**:
+- **Remove Special Characters or Remove Stop Words**:
   - Remove special characters (special_characters.txt) or remove stop words (stop_words.txt) from text data, you can update two this .txt files to customize them.
     
 - **Dictionary-Based Encoding**: 
